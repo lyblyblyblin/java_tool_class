@@ -42,5 +42,27 @@ public class ApkTool {
         return null;
     }
 
-
+    /**
+     * 检查包是否存在
+     *
+     * @param packname
+     * @return
+     */
+    public static boolean checkPackInfo(Context context,String packname) {
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = context.getPackageManager().getPackageInfo(packname, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return packageInfo != null;
+    }
+    
+    //启动已经安装的软件
+    public static void launchPackage(Context context,String packname)
+    {
+        PackageManager packageManager=context.getPackageManager();
+        Intent intent = packageManager.getLaunchIntentForPackage(packname);
+        context.startActivity(intent);
+    }
 }
