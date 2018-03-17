@@ -203,45 +203,38 @@ public class FileStorageHelper {
         }
     }
 
+	
+//获取内置外置存储卡
 
-    /**
-     * 获取内置SD卡路径
-     * @return
-     */
-    public static String getInnerSDCardPath() {
-        return Environment.getExternalStorageDirectory().getPath();
-    }
+   private static String getStoragePath(Context mContext, boolean is_removale) {
 
-    /**
-     * 获取外置SD卡路径
-     * @return  应该就一条记录或空
-     */
-    public static List<String> getExtSDCardPath()
-    {
-        List<String> lResult = new ArrayList<String>();
+        StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
+        Class<?> storageVolumeClazz = null;
         try {
-            Runtime rt = Runtime.getRuntime();
-            Process proc = rt.exec("mount");
-            InputStream is = proc.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.contains("extSdCard"))
-                {
-                    String [] arr = line.split(" ");
-                    String path = arr[1];
-                    File file = new File(path);
-                    if (file.isDirectory())
-                    {
-                        lResult.add(path);
-                    }
+            storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
+            Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
+            Method getPath = storageVolumeClazz.getMethod("getPath");
+            Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
+            Object result = getVolumeList.invoke(mStorageManager);
+            final int length = Array.getLength(result);
+            for (int i = 0; i < length; i++) {
+                Object storageVolumeElement = Array.get(result, i);
+                String path = (String) getPath.invoke(storageVolumeElement);
+                boolean removable = (Boolean) isRemovable.invoke(storageVolumeElement);
+                if (is_removale == removable) {
+                    return path;
                 }
             }
-            isr.close();
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
-        return lResult;
+        return null;
     }
 
     //返回文件夹里面的文件(不包括文件夹)
