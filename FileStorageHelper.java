@@ -205,7 +205,8 @@ public class FileStorageHelper {
 
 	
 //获取内置外置存储卡
-
+    //true外置
+    //false内置
    private static String getStoragePath(Context mContext, boolean is_removale) {
 
         StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
