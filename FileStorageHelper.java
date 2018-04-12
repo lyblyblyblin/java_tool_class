@@ -1,7 +1,8 @@
-package com.killyulong.root_y90;
+package hello.world.button.Utils;
 
 import android.content.Context;
 import android.os.Environment;
+import android.os.storage.StorageManager;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -11,6 +12,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,13 +36,13 @@ public class FileStorageHelper {
 //    * @param storagePath 目标文件夹的路径
 //    */
 
-	/*
-	demo
-	FileStorageHelper.copyFilesFromRaw(this,R.raw.doc_test,"doc_test",path + "/" + "mufeng");
+    /*
+    demo
+    FileStorageHelper.copyFilesFromRaw(this,R.raw.doc_test,"doc_test",path + "/" + "mufeng");
     上面代码是将raw中的doc_test复制到/mufeng下
     */
-    public static void copyFilesFromRaw(Context context, int id, String fileName, String storagePath){
-        InputStream inputStream=context.getResources().openRawResource(id);
+    public static void copyFilesFromRaw(Context context, int id, String fileName, String storagePath) {
+        InputStream inputStream = context.getResources().openRawResource(id);
         File file = new File(storagePath);
         if (!file.exists()) {//如果文件夹不存在，则创建新的文件夹
             file.mkdirs();
@@ -86,19 +90,18 @@ public class FileStorageHelper {
         //有无斜杠判断
         //删除失败与文件不存在的日志情况
         //这里写了两次日志
-        if (!delAFilePath.endsWith(SEPARATOR))
-        {
+        if (!delAFilePath.endsWith(SEPARATOR)) {
             File file = new File(delAFilePath);
             if (file.delete())
                 return true;
-        }else {
+        } else {
             //写入日志
-            String msm="delAFile: "+delAFilePath+"  no a file,is dir";
+            String msm = "delAFile: " + delAFilePath + "  no a file,is dir";
             Log.d(TAG, msm);
 
         }
         //写入日志
-        String msm="delAFile: "+delAFilePath+"  del false";
+        String msm = "delAFile: " + delAFilePath + "  del false";
         Log.d(TAG, msm);
         return false;
     }
@@ -106,8 +109,7 @@ public class FileStorageHelper {
     /**
      * 删除目录及目录下的文件
      *
-     * @param dir
-     *            要删除的目录的文件路径
+     * @param dir 要删除的目录的文件路径
      * @return 目录删除成功返回true，否则返回false
      */
     //更改
@@ -143,7 +145,7 @@ public class FileStorageHelper {
             }
         }
         if (!flag) {
-            System.out.println("删除目录失败！" + dir );
+            System.out.println("删除目录失败！" + dir);
             return false;
         }
         // 删除当前目录
@@ -161,41 +163,41 @@ public class FileStorageHelper {
     //传入  文件路径
     //文件名
     //从那开始判断
-    public static void travDeleteFilesLikeName(String dirPath,String likeName,int startNum){
+    public static void travDeleteFilesLikeName(String dirPath, String likeName, int startNum) {
         File file = new File(dirPath);
-        if(file.isFile()){
+        if (file.isFile()) {
             //是文件
-            String temp = file.getName().substring(0,file.getName().lastIndexOf("."));
-            if(temp.indexOf(likeName) == startNum){
+            String temp = file.getName().substring(0, file.getName().lastIndexOf("."));
+            if (temp.indexOf(likeName) == startNum) {
                 file.delete();
             }
         } else {
             //是目录
             File[] files = file.listFiles();
-            for(int i = 0; i < files.length; i++){
-                travDeleteFilesLikeName(files[i].toString(), likeName,startNum);
+            for (int i = 0; i < files.length; i++) {
+                travDeleteFilesLikeName(files[i].toString(), likeName, startNum);
             }
         }
     }
+
     //不遍历删除文件夹下包含指定字符的文件
     //传入  文件路径
     //文件名
     //从那开始判断
-    public static void deleteFilesLikeName(String dirPath,String likeName,int startNum){
+    public static void deleteFilesLikeName(String dirPath, String likeName, int startNum) {
         File file = new File(dirPath);
-        if(file.isFile()){
+        if (file.isFile()) {
             //是文件
-            String temp = file.getName().substring(0,file.getName().lastIndexOf("."));
-            if(temp.indexOf(likeName) == startNum){
+            String temp = file.getName().substring(0, file.getName().lastIndexOf("."));
+            if (temp.indexOf(likeName) == startNum) {
                 file.delete();
             }
         } else {
             //是目录
             File[] files = file.listFiles();
-            for(int i = 0; i < files.length; i++){
+            for (int i = 0; i < files.length; i++) {
 
-                if(files[i].toString().indexOf(likeName) == (startNum+dirPath.length()))
-                {
+                if (files[i].toString().indexOf(likeName) == (startNum + dirPath.length())) {
                     deleteDirectory(files[i].toString());
                     Log.d(TAG, files[i].toString());
                 }
@@ -203,11 +205,11 @@ public class FileStorageHelper {
         }
     }
 
-	
-//获取内置外置存储卡
+
+    //获取内置外置存储卡
     //true外置
     //false内置
-   private static String getStoragePath(Context mContext, boolean is_removale) {
+    private static String getStoragePath(Context mContext, boolean is_removale) {
 
         StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
         Class<?> storageVolumeClazz = null;
@@ -240,7 +242,7 @@ public class FileStorageHelper {
 
     //返回文件夹里面的文件(不包括文件夹)
     public static List<File> showDirectory(String inputDdir) {
-        String dir=Environment.getExternalStorageDirectory().getAbsolutePath()+inputDdir;
+        String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + inputDdir;
         // 如果dir不以文件分隔符结尾，自动添加文件分隔符
         if (!dir.endsWith(File.separator))
             dir = dir + File.separator;
@@ -252,12 +254,10 @@ public class FileStorageHelper {
         }
         // 删除文件夹中的所有文件包括子目录
         File[] files = dirFile.listFiles();
-        List<File> returnFiles=new ArrayList<File>();
-        int n=0;
-        for(int i=0;i<files.length;i++)
-        {
-            if(!files[i].isDirectory())
-            {
+        List<File> returnFiles = new ArrayList<File>();
+        int n = 0;
+        for (int i = 0; i < files.length; i++) {
+            if (!files[i].isDirectory()) {
                 returnFiles.add(files[i]);
                 //Log.d(TAG, "showDirectory: "+files[i].toString());
                 n++;
@@ -267,4 +267,5 @@ public class FileStorageHelper {
         return returnFiles;
     }
 }
+
 
